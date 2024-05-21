@@ -11,6 +11,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "prettier/prettier": "error"
+    "operator-linebreak": 0,
+    "prettier/prettier": 0
   }
 }

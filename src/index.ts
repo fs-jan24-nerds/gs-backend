@@ -1,8 +1,10 @@
 import express from 'express';
-
+import cors from 'cors';
+import { router as productsRouter } from './routes/product.route.js';
+const PORT = process.env.PORT || 5005;
 const app = express();
-const port = process.env.PORT || 3003;
-
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+app.use(cors({ origin: '*' }));
+app.use('/products', express.json(), productsRouter);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
