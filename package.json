@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc",
@@ -27,17 +26,19 @@
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
+    "sequelize-cli": "^6.6.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.10.5",
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@types/cors": "^2.8.17",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "pg": "^8.11.5",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.3",
-    "@types/cors": "^2.8.17",
-    "cors": "^2.8.5"
+    "sequelize": "^6.37.3"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
