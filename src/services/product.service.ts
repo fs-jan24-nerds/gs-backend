@@ -84,9 +84,9 @@ export const getSameModels = (namespaceId: string) => {
   return products.filter((product) => product.itemId.startsWith(namespaceId));
 };
 
-// export const getById = (id: number) => {
-//   return products.find((product) => product.id === id) as Product;
-// };
+export const getProductById = (id: number) => {
+  return products.find((product) => product.id === id) as Product;
+};
 
 // export const create = (body: Product) => {
 //   products.push(body);

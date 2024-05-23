@@ -18,19 +18,25 @@ export const getAllProducts = (req: Request, res: Response) => {
   );
 };
 
-// export const getOneProduct = (req: Request, res: Response) => {
-//   const { id } = req.params;
+export const getProductById = (req: Request, res: Response) => {
+  const { id } = req.params;
 
-//   const product = productService.getById(Number(id));
+  if (!id) {
+    res.sendStatus(400);
 
-//   if (!product) {
-//     res.sendStatus(404);
+    return;
+  }
 
-//     return;
-//   }
+  const product = productService.getProductById(Number(id));
 
-//   res.send(product);
-// };
+  if (!product) {
+    res.sendStatus(404);
+
+    return;
+  }
+
+  res.send(product);
+};
 
 // export const createProduct = (req: Request, res: Response) => {
 //   const body = req.body;
