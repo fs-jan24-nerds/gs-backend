@@ -18,10 +18,10 @@ export interface Product {
   ram: string;
   year?: number;
   image: string;
-  item?: Item;
+  item?: ProductDetails;
 }
 
-export interface Item {
+export interface ProductDetails {
   id: string;
   category: Categories;
   namespaceId: string;
