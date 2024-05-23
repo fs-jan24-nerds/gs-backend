@@ -5,7 +5,8 @@ import * as productDetailsController from '../controllers/productDetails.control
 const router = express.Router();
 
 router.get('/', productController.getAllProducts);
-router.get('/:id', productDetailsController.getProductDetailsById);
+router.get('/:id', productController.getProductById);
+router.get('/details/:id', productDetailsController.getProductDetailsById);
 
 // router.post('/', productController.createProduct);
 // router.patch('/:id', productController.updateProduct);
