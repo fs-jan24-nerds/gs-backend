@@ -1,5 +1,6 @@
-import { Product, Categories } from '../types.js';
-import { stringNormalize } from '../util/stringNormalize.js';
+import { Products } from '../db.js';
+import { Product } from '../types.js';
+// import { stringNormalize } from '../util/stringNormalize.js';
 
 const products: Product[] = [
   {
@@ -46,38 +47,16 @@ const products: Product[] = [
   },
 ];
 
-type FilterParams = {
-  category?: Categories;
-  page?: number;
-  limit?: number;
-  search?: string;
-};
+// type FilterParams = {
+//   category?: Categories;
+//   page?: number;
+//   limit?: number;
+//   search?: string;
+// };
 
-export const getAll = ({
-  category,
-  page = 1,
-  limit = 16,
-  search,
-}: FilterParams) => {
-  if (search) {
-    return products.filter((product) => {
-      return stringNormalize(product.name).includes(stringNormalize(search));
-    });
-  }
-
-  return products
-    .filter((product) => {
-      let result = true;
-
-      if (category) {
-        result &&= product.category === category;
-      }
-
-      return result;
-    })
-    .filter((_, index) => {
-      return index >= (page - 1) * limit && index < page * limit;
-    });
+export const getAll = async ({ ...params }) => {
+  console.log(params);
+  return Products.findAll();
 };
 
 export const getSameModels = (namespaceId: string) => {
