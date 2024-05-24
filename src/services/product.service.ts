@@ -1,5 +1,4 @@
 import { Op } from 'sequelize';
-// import { Category } from '../types/Category';
 import { Products } from '../db';
 
 type PageParams = {
