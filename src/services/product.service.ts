@@ -65,3 +65,14 @@ export const getById = async (id: number) => {
 
   return product;
 };
+
+export const getSameModels = async (namespaceId: string) => {
+  const products = await Products.findAll({
+    where: {
+      itemId: {
+        [Op.like]: `${namespaceId}%`,
+      },
+    },
+  });
+  return products;
+};

@@ -56,3 +56,16 @@ export const getProductById = async (req: Request, res: Response) => {
     res.status(500).send('Error fetching product');
   }
 };
+
+export const getSameModels = async (req: Request, res: Response) => {
+  const { namespaceId } = req.params;
+
+  const products = await productService.getSameModels(namespaceId);
+
+  if (!products) {
+    res.sendStatus(404);
+
+    return;
+  }
+  res.status(200).send(products);
+};
