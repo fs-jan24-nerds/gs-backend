@@ -1,7 +1,7 @@
 import * as productDetailsService from '../services/productDetails.service.js';
 import { Request, Response } from 'express';
 
-export const getProductDetailsById = (req: Request, res: Response) => {
+export const getProductDetailsById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (!id) {
@@ -10,7 +10,7 @@ export const getProductDetailsById = (req: Request, res: Response) => {
     return;
   }
 
-  const productDetails = productDetailsService.getById(id);
+  const productDetails = await productDetailsService.getById(id);
 
   if (!productDetails) {
     res.sendStatus(404);
