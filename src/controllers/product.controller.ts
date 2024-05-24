@@ -4,7 +4,8 @@ import { Request, Response } from 'express';
 export const getAllProducts = async (req: Request, res: Response) => {
   if (req.body.namespaceId) {
     res.statusCode = 200;
-    res.send(productService.getSameModels(req.body.namespaceId));
+    const products = await productService.getSameModels(req.body.namespaceId);
+    res.send(products);
 
     return;
   }
@@ -18,7 +19,20 @@ export const getAllProducts = async (req: Request, res: Response) => {
   );
 };
 
-export const getProductById = (req: Request, res: Response) => {
+export const getSameModels = async (req: Request, res: Response) => {
+  const { namespaceId } = req.params;
+
+  const products = await productService.getSameModels(namespaceId);
+
+  if (!products) {
+    res.sendStatus(404);
+
+    return;
+  }
+  res.status(200).send(products);
+};
+
+export const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (!id) {
@@ -27,14 +41,14 @@ export const getProductById = (req: Request, res: Response) => {
     return;
   }
 
-  const product = productService.getProductById(Number(id));
+  const product = await productService.getProductById(Number(id));
 
   if (!product) {
     res.sendStatus(404);
 
     return;
   }
-
+  res.statusCode = 200;
   res.send(product);
 };
 
