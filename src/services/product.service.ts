@@ -22,42 +22,37 @@ export const getAll = async (
   filterParams: FilterParams = {},
   sortParams: SortParams = { sortBy: 'price' },
 ) => {
-  try {
-    const { perPage = 10, page = 1 } = pageParams;
-    const { query, minPrice, maxPrice } = filterParams;
-    const { sortBy = 'price' } = sortParams;
+  const { perPage = 10, page = 1 } = pageParams;
+  const { query, minPrice, maxPrice } = filterParams;
+  const { sortBy = 'price' } = sortParams;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: any = {
-      category,
-    };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const whereClause: any = {
+    category,
+  };
 
-    if (query) {
-      whereClause.name = { [Op.like]: `%${query}%` };
-    }
-    if (minPrice !== undefined) {
-      whereClause.price = { [Op.gte]: minPrice };
-    }
-    if (maxPrice !== undefined) {
-      if (whereClause.price) {
-        whereClause.price[Op.lte] = maxPrice;
-      } else {
-        whereClause.price = { [Op.lte]: maxPrice };
-      }
-    }
-
-    const products = await Products.findAll({
-      where: whereClause,
-      order: [[sortBy, 'DESC']],
-      limit: perPage,
-      offset: perPage * (page - 1),
-    });
-
-    return products;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    throw new Error('Error fetching products');
+  if (query) {
+    whereClause.name = { [Op.like]: `%${query}%` };
   }
+  if (minPrice !== undefined) {
+    whereClause.price = { [Op.gte]: minPrice };
+  }
+  if (maxPrice !== undefined) {
+    if (whereClause.price) {
+      whereClause.price[Op.lte] = maxPrice;
+    } else {
+      whereClause.price = { [Op.lte]: maxPrice };
+    }
+  }
+
+  const products = await Products.findAll({
+    where: whereClause,
+    order: [[sortBy, 'DESC']],
+    limit: perPage,
+    offset: perPage * (page - 1),
+  });
+
+  return products;
 };
 
 export const getById = async (id: number) => {
