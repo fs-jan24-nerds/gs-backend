@@ -2,85 +2,57 @@ import * as productService from '../services/product.service.js';
 import { Request, Response } from 'express';
 
 export const getAllProducts = async (req: Request, res: Response) => {
-  if (req.body.namespaceId) {
+  try {
+    const { query, minPrice, maxPrice, sortBy } = req.query;
+    const { category } = req.body;
+
+    const parsedQuery = typeof query === 'string' ? query : undefined;
+    const parsedMinPrice =
+      typeof minPrice === 'string' ? parseFloat(minPrice) : undefined;
+    const parsedMaxPrice =
+      typeof maxPrice === 'string' ? parseFloat(maxPrice) : undefined;
+    const parsedSortBy = typeof sortBy === 'string' ? sortBy : undefined;
+
+    const filterParams = {
+      query: parsedQuery,
+      minPrice: parsedMinPrice,
+      maxPrice: parsedMaxPrice,
+    };
+    const sortParams = { sortBy: parsedSortBy };
+
     res.statusCode = 200;
-    res.send(productService.getSameModels(req.body.namespaceId));
-
-    return;
+    res.send(
+      await productService.getAll(
+        category,
+        undefined,
+        filterParams,
+        sortParams,
+      ),
+    );
+  } catch (error) {
+    console.error('Error getting products:', error);
+    res.status(500).send('Error getting products');
   }
-
-  res.statusCode = 200;
-  res.send(
-    await productService.getAll({
-      ...req.body,
-      ...req.query,
-    }),
-  );
 };
 
-export const getProductById = (req: Request, res: Response) => {
-  const { id } = req.params;
+export const getProductById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
 
-  if (!id) {
-    res.sendStatus(400);
+    const productId = parseInt(id, 10);
 
-    return;
+    if (isNaN(productId)) {
+      return res.status(400).send('Invalid product ID');
+    }
+
+    const product = await productService.getById(productId);
+
+    res.status(200).send(product);
+  } catch (error) {
+    if (error) {
+      return res.status(404).send('Product not found');
+    }
+    console.error('Error fetching product:', error);
+    res.status(500).send('Error fetching product');
   }
-
-  const product = productService.getProductById(Number(id));
-
-  if (!product) {
-    res.sendStatus(404);
-
-    return;
-  }
-
-  res.send(product);
 };
-
-// export const createProduct = (req: Request, res: Response) => {
-//   const body = req.body;
-
-//   if (!body) {
-//     res.sendStatus(422);
-
-//     return;
-//   }
-
-//   const product = productService.create(body);
-//   res.statusCode = 201;
-
-//   res.send(product);
-// };
-
-// export const updateProduct = (req: Request, res: Response) => {
-//   const { id } = req.params;
-//   const body = req.body;
-//   const product = productService.getById(Number(id));
-
-//   if (!product) {
-//     res.sendStatus(404);
-
-//     return;
-//   }
-
-//   const updatedProduct = productService.update(Number(id), body);
-
-//   res.statusCode = 200;
-
-//   res.send(updatedProduct);
-// };
-
-// export const removeProduct = (req: Request, res: Response) => {
-//   const { id } = req.params;
-
-//   if (!productService.getById(Number(id))) {
-//     res.sendStatus(404);
-
-//     return;
-//   }
-
-//   productService.remove(Number(id));
-
-//   res.sendStatus(204);
-// };

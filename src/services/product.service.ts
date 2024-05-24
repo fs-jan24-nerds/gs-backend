@@ -1,86 +1,68 @@
-import { Products } from '../db.js';
-import { Product } from '../types.js';
-// import { stringNormalize } from '../util/stringNormalize.js';
+import { Op } from 'sequelize';
+// import { Category } from '../types/Category';
+import { Products } from '../db';
 
-const products: Product[] = [
-  {
-    id: 1,
-    category: 'phones',
-    itemId: 'apple-iphone-7-32gb-black',
-    name: 'Apple iPhone 7 32GB Black',
-    fullPrice: 400,
-    price: 375,
-    screen: "4.7' IPS",
-    capacity: '32GB',
-    color: 'black',
-    ram: '2GB',
-    year: 2016,
-    image: 'img/phones/apple-iphone-7/black/00.webp',
-  },
-  {
-    id: 121,
-    category: 'accessories',
-    itemId: 'apple-watch-series-3-38mm-space-gray',
-    name: 'Apple Watch Series 3 38mm Space Gray',
-    fullPrice: 199,
-    price: 169,
-    screen: "1.3' OLED",
-    capacity: '38mm',
-    color: 'space gray',
-    ram: '768MB',
-    year: 2017,
-    image: 'img/accessories/apple-watch-series-3/space-gray/00.webp',
-  },
-  {
-    id: 155,
-    category: 'tablets',
-    itemId: 'apple-ipad-pro-11-2021-128gb-spacegray',
-    name: 'Apple iPad Pro 11 (2021) 128GB Space Gray',
-    capacity: '128GB',
-    fullPrice: 799,
-    price: 749,
-    color: 'spacegray',
-    image: 'img/tablets/apple-ipad-pro-11-2021/spacegray/00.webp',
-    screen: "11' Liquid Retina",
-    ram: '8GB',
-    year: 2021,
-  },
-];
-
-// type FilterParams = {
-//   category?: Categories;
-//   page?: number;
-//   limit?: number;
-//   search?: string;
-// };
-
-export const getAll = async ({ ...params }) => {
-  console.log(params);
-  return Products.findAll();
+type PageParams = {
+  perPage?: number;
+  page?: number;
 };
 
-export const getSameModels = (namespaceId: string) => {
-  return products.filter((product) => product.itemId.startsWith(namespaceId));
+type FilterParams = {
+  query?: string;
+  minPrice?: number;
+  maxPrice?: number;
 };
 
-export const getProductById = (id: number) => {
-  return products.find((product) => product.id === id) as Product;
+type SortParams = {
+  sortBy?: string;
 };
 
-// export const create = (body: Product) => {
-//   products.push(body);
+export const getAll = async (
+  category: string = 'phones',
+  pageParams: PageParams = { perPage: 200, page: 1 },
+  filterParams: FilterParams = {},
+  sortParams: SortParams = { sortBy: 'price' },
+) => {
+  try {
+    const { perPage = 10, page = 1 } = pageParams;
+    const { query, minPrice, maxPrice } = filterParams;
+    const { sortBy = 'price' } = sortParams;
 
-//   return body;
-// };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = {
+      category,
+    };
 
-// export const update = (id: number, body: Product) => {
-//   const product = getById(id);
+    if (query) {
+      whereClause.name = { [Op.like]: `%${query}%` };
+    }
+    if (minPrice !== undefined) {
+      whereClause.price = { [Op.gte]: minPrice };
+    }
+    if (maxPrice !== undefined) {
+      if (whereClause.price) {
+        whereClause.price[Op.lte] = maxPrice;
+      } else {
+        whereClause.price = { [Op.lte]: maxPrice };
+      }
+    }
 
-//   Object.assign(product, { ...body });
+    const products = await Products.findAll({
+      where: whereClause,
+      order: [[sortBy, 'DESC']],
+      limit: perPage,
+      offset: perPage * (page - 1),
+    });
 
-//   return product;
-// };
+    return products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw new Error('Error fetching products');
+  }
+};
 
-// export const remove = (id: number) => {
-//   products = products.filter((product) => product.id !== id);
-// };
+export const getById = async (id: number) => {
+  const product = await Products.findByPk(id);
+
+  return product;
+};
