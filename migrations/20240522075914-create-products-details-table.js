@@ -10,6 +10,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      category: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       namespaceId: {
         allowNull: false,
         type: Sequelize.STRING,
