@@ -1,7 +1,7 @@
 import * as productService from '../services/product.service.js';
 import { Request, Response } from 'express';
 
-export const getAllProducts = (req: Request, res: Response) => {
+export const getAllProducts = async (req: Request, res: Response) => {
   if (req.body.namespaceId) {
     res.statusCode = 200;
     res.send(productService.getSameModels(req.body.namespaceId));
@@ -11,7 +11,7 @@ export const getAllProducts = (req: Request, res: Response) => {
 
   res.statusCode = 200;
   res.send(
-    productService.getAll({
+    await productService.getAll({
       ...req.body,
       ...req.query,
     }),
