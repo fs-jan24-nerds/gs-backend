@@ -69,3 +69,23 @@ export const getSameModels = async (req: Request, res: Response) => {
   }
   res.status(200).send(products);
 };
+
+export const getRecommended = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { category } = req.params;
+  try {
+    const recommendedProducts =
+      await productService.getRecommendedProducts(category);
+
+    if (recommendedProducts.length > 0) {
+      res.status(200).send(recommendedProducts);
+    } else {
+      res.status(404).send('No products found in this category');
+    }
+  } catch (err) {
+    console.error('Error in getRecommended controller:', err);
+    res.status(500).send('Internal Server Error');
+  }
+};
