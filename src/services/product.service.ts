@@ -1,5 +1,5 @@
 import { Op, Sequelize } from 'sequelize';
-import { Products } from '../db';
+import { Products, ProductsDetails } from '../db';
 
 type PageParams = {
   perPage?: number;
@@ -59,6 +59,15 @@ export const getById = async (id: number) => {
   const product = await Products.findByPk(id);
 
   return product;
+};
+
+export const getProductByItemId = async (itemId: string) => {
+  const details = await ProductsDetails.findAll({
+    where: {
+      id: itemId,
+    },
+  });
+  return details;
 };
 
 export const getSameModels = async (namespaceId: string) => {
