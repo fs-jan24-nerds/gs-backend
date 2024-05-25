@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { Sequelize } from 'sequelize';
 import { products } from './models/products.js';
 import { productsDetails } from './models/products-details.js';
+import { users } from './models/users.js';
 dotenv.config();
 
 const { DATABASE_URL } = process.env;
@@ -28,6 +29,7 @@ export const Products = sequelize.define('products', products, {
   createdAt: false,
   updatedAt: false,
 });
+
 export const ProductsDetails = sequelize.define(
   'products_details',
   productsDetails,
@@ -37,3 +39,9 @@ export const ProductsDetails = sequelize.define(
     updatedAt: false,
   },
 );
+
+export const Users = sequelize.define('users', users, {
+  tableName: 'users',
+  createdAt: false,
+  updatedAt: false,
+});
