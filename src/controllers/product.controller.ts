@@ -57,6 +57,26 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductByItemId = async (req: Request, res: Response) => {
+  try {
+    const { itemId } = req.params;
+
+    if (!itemId) {
+      return res.status(400).send('Invalid product ItemId');
+    }
+
+    const product = await productService.getProductByItemId(itemId);
+
+    res.status(200).send(product);
+  } catch (error) {
+    if (error) {
+      return res.status(404).send('Product not found');
+    }
+    console.error('Error fetching product:', error);
+    res.status(500).send('Error fetching product');
+  }
+};
+
 export const getSameModels = async (req: Request, res: Response) => {
   const { namespaceId } = req.params;
 
