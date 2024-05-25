@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { Products } from '../db';
 
 type PageParams = {
@@ -70,4 +70,16 @@ export const getSameModels = async (namespaceId: string) => {
     },
   });
   return products;
+};
+
+export const getRecommendedProducts = async (category: string) => {
+  const recommendedProducts = await Products.findAll({
+    where: {
+      category: category,
+    },
+    order: Sequelize.literal('random()'),
+    limit: 10,
+  });
+
+  return recommendedProducts;
 };
