@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const { query, minPrice, maxPrice, sortBy, perPage, page } = req.query;
+    const { query, minPrice, maxPrice, sort, order, perPage, page } = req.query;
     const { category } = req.body;
 
     const parsedQuery = typeof query === 'string' ? query : undefined;
@@ -11,7 +11,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
       typeof minPrice === 'string' ? parseFloat(minPrice) : undefined;
     const parsedMaxPrice =
       typeof maxPrice === 'string' ? parseFloat(maxPrice) : undefined;
-    const parsedSortBy = typeof sortBy === 'string' ? sortBy : undefined;
+    const parsedSort = typeof sort === 'string' ? sort : undefined;
+    const parsedOrder: 'asc' | 'desc' = order === 'asc' ? 'asc' : 'desc';
     const parsedPerPage =
       typeof perPage === 'string' ? parseInt(perPage, 10) : undefined;
     const parsedPage =
@@ -22,16 +23,21 @@ export const getAllProducts = async (req: Request, res: Response) => {
       minPrice: parsedMinPrice,
       maxPrice: parsedMaxPrice,
     };
-    const sortParams = { sortBy: parsedSortBy };
+    const sortParams = { sort: parsedSort, order: parsedOrder };
 
-    const products = await productService.getAll(
+    const data = await productService.getAll(
+
       category,
       { perPage: parsedPerPage, page: parsedPage },
       filterParams,
       sortParams,
     );
+    res.statusCode = 200;
+    res.send({
+      products: data.rows,
+      total: data.count,
+    });
 
-    res.status(200).json(products);
   } catch (error) {
     console.error('Error getting products:', error);
     res.status(500).send('Error getting products');
@@ -81,9 +87,11 @@ export const getProductByItemId = async (req: Request, res: Response) => {
 };
 
 export const getSameModels = async (req: Request, res: Response) => {
-  const { namespaceId } = req.params;
+  const { namespaceId } = req.query;
 
-  const products = await productService.getSameModels(namespaceId);
+  const parsedNamespaceId = typeof namespaceId === 'string' ? namespaceId : '';
+
+  const products = await productService.getSameModels(parsedNamespaceId);
 
   if (!products) {
     res.sendStatus(404);

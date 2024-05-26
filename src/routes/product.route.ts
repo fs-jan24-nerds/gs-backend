@@ -5,7 +5,7 @@ import * as productDetailsController from '../controllers/productDetails.control
 const router = express.Router();
 
 router.get('/', productController.getAllProducts);
-router.get('/:id', productController.getProductById);
+router.get('/similar', productController.getSameModels);
 router.get('/product/:itemId', productController.getProductByItemId);
 router.get('/:category/recommended', productController.getRecommended);
 router.get(
@@ -13,7 +13,7 @@ router.get(
   productController.getProductsSortedByHotPrice,
 );
 router.get('/details/:id', productDetailsController.getProductDetailsById);
-
+router.get('/:id', productController.getProductById);
 // router.post('/', productController.createProduct);
 // router.patch('/:id', productController.updateProduct);
 // router.delete('/:id', productController.removeProduct);
