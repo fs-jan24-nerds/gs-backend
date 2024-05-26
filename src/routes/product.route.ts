@@ -8,6 +8,10 @@ router.get('/', productController.getAllProducts);
 router.get('/similar', productController.getSameModels);
 router.get('/product/:itemId', productController.getProductByItemId);
 router.get('/:category/recommended', productController.getRecommended);
+router.get(
+  '/products/hot-price',
+  productController.getProductsSortedByHotPrice,
+);
 router.get('/details/:id', productDetailsController.getProductDetailsById);
 router.get('/:id', productController.getProductById);
 // router.post('/', productController.createProduct);

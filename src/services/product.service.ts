@@ -91,3 +91,17 @@ export const getRecommendedProducts = async (category: string) => {
 
   return recommendedProducts;
 };
+
+export const getProductsSortedByHotPrice = async () => {
+  const products = await Products.findAll({
+    attributes: {
+      include: [
+        [Sequelize.literal('"fullPrice" - "price"'), 'priceDifference'],
+      ],
+    },
+    order: [[Sequelize.literal('"priceDifference"'), 'DESC']],
+    limit: 10,
+  });
+
+  return products;
+};
