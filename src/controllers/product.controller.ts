@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const { query, minPrice, maxPrice, sortBy } = req.query;
+    const { query, minPrice, maxPrice, sortBy, perPage, page } = req.query;
     const { category } = req.body;
 
     const parsedQuery = typeof query === 'string' ? query : undefined;
@@ -12,6 +12,10 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const parsedMaxPrice =
       typeof maxPrice === 'string' ? parseFloat(maxPrice) : undefined;
     const parsedSortBy = typeof sortBy === 'string' ? sortBy : undefined;
+    const parsedPerPage =
+      typeof perPage === 'string' ? parseInt(perPage, 10) : undefined;
+    const parsedPage =
+      typeof page === 'string' ? parseInt(page, 10) : undefined;
 
     const filterParams = {
       query: parsedQuery,
@@ -20,15 +24,14 @@ export const getAllProducts = async (req: Request, res: Response) => {
     };
     const sortParams = { sortBy: parsedSortBy };
 
-    res.statusCode = 200;
-    res.send(
-      await productService.getAll(
-        category,
-        undefined,
-        filterParams,
-        sortParams,
-      ),
+    const products = await productService.getAll(
+      category,
+      { perPage: parsedPerPage, page: parsedPage },
+      filterParams,
+      sortParams,
     );
+
+    res.status(200).json(products);
   } catch (error) {
     console.error('Error getting products:', error);
     res.status(500).send('Error getting products');
