@@ -104,8 +104,21 @@ export const getRecommended = async (
     } else {
       res.status(404).send('No products found in this category');
     }
-  } catch (err) {
-    console.error('Error in getRecommended controller:', err);
+  } catch (error) {
+    console.error('Error in getRecommended controller:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+export const getProductsSortedByHotPrice = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const products = await productService.getProductsSortedByHotPrice();
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).send('Internal Server Error');
   }
 };
