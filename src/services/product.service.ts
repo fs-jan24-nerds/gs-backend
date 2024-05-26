@@ -13,18 +13,19 @@ type FilterParams = {
 };
 
 type SortParams = {
-  sortBy?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
 };
 
 export const getAll = async (
   category: string = 'phones',
-  pageParams: PageParams = { perPage: 200, page: 1 },
+  pageParams: PageParams = { perPage: 1, page: 1 },
   filterParams: FilterParams = {},
-  sortParams: SortParams = { sortBy: 'price' },
+  sortParams: SortParams = { sort: 'price', order: 'asc' },
 ) => {
   const { perPage = 10, page = 1 } = pageParams;
   const { query, minPrice, maxPrice } = filterParams;
-  const { sortBy = 'price' } = sortParams;
+  const { sort = 'price', order = 'asc' } = sortParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const whereClause: any = {
@@ -45,14 +46,12 @@ export const getAll = async (
     }
   }
 
-  const products = await Products.findAll({
+  return await Products.findAndCountAll({
     where: whereClause,
-    order: [[sortBy, 'DESC']],
+    order: [[sort, order.toUpperCase()]],
     limit: perPage,
     offset: perPage * (page - 1),
   });
-
-  return products;
 };
 
 export const getById = async (id: number) => {
@@ -74,7 +73,7 @@ export const getSameModels = async (namespaceId: string) => {
   const products = await Products.findAll({
     where: {
       itemId: {
-        [Op.like]: `${namespaceId}%`,
+        [Op.startsWith]: namespaceId,
       },
     },
   });
