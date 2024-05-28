@@ -46,7 +46,7 @@ export const getAll = async (params: QueryParams) => {
   };
 
   if (query) {
-    whereClause.name = { [Op.like]: `%${query}%` };
+    whereClause.name = { [Op.iLike]: `%${query}%` };
   }
   if (minPrice !== undefined) {
     whereClause.price = { [Op.gte]: minPrice };
