@@ -14,13 +14,19 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await usersService.createUser({
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newUser: any = await usersService.createUser({
       username,
       email,
       password: hashedPassword,
     });
 
-    res.status(201).send(newUser);
+    const token = jwt.sign({ userId: newUser.id }, SECRET_KEY, {
+      expiresIn: '1h',
+    });
+
+    res.status(201).send({ user: newUser, token });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).send('Error registering user');
