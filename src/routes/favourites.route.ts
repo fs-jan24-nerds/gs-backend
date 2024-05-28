@@ -3,7 +3,7 @@ import * as favouritesController from '../controllers/favourites.controller';
 
 const router = express.Router();
 
-router.post('/add', favouritesController.addFavourite);
+router.post('/', favouritesController.addFavourite);
 router.get('/:userId', favouritesController.getFavouriteProducts);
 router.delete('/', favouritesController.removeFavouriteProduct);
 
