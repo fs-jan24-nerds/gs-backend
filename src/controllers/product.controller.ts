@@ -1,134 +1,103 @@
 import * as productService from '../services/product.service.js';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { httpStatusCodes } from '../util/http-status-codes.js';
+import { QueryParams } from '../types.js';
 
-export const getAllProducts = async (req: Request, res: Response) => {
+export const getAllProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { query, minPrice, maxPrice, sort, order, perPage, page, category } =
-      req.query;
+    const queryParams: QueryParams = req.query as unknown as QueryParams;
 
-    const parsedQuery = typeof query === 'string' ? query : undefined;
-    const parsedMinPrice =
-      typeof minPrice === 'string' ? parseFloat(minPrice) : undefined;
-    const parsedMaxPrice =
-      typeof maxPrice === 'string' ? parseFloat(maxPrice) : undefined;
-    const parsedSort = typeof sort === 'string' ? sort : undefined;
-    const parsedOrder: 'asc' | 'desc' = order === 'asc' ? 'asc' : 'desc';
-    const parsedPerPage =
-      typeof perPage === 'string' ? parseInt(perPage, 10) : undefined;
-    const parsedPage =
-      typeof page === 'string' ? parseInt(page, 10) : undefined;
-    const parsedCategory = typeof category === 'string' ? category : 'phones';
+    const data = await productService.getAll(queryParams);
 
-    const filterParams = {
-      query: parsedQuery,
-      minPrice: parsedMinPrice,
-      maxPrice: parsedMaxPrice,
-    };
-    const sortParams = { sort: parsedSort, order: parsedOrder };
-
-    const data = await productService.getAll(
-      parsedCategory,
-      { perPage: parsedPerPage, page: parsedPage },
-      filterParams,
-      sortParams,
-    );
-    res.statusCode = 200;
-    res.send({
+    res.status(httpStatusCodes.OK).send({
       products: data.rows,
       total: data.count,
     });
   } catch (error) {
-    console.error('Error getting products:', error);
-    res.status(500).send('Error getting products');
+    next(error);
   }
 };
 
-export const getProductById = async (req: Request, res: Response) => {
+export const getProductById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
 
     const productId = parseInt(id, 10);
 
-    if (isNaN(productId)) {
-      return res.status(400).send('Invalid product ID');
-    }
-
     const product = await productService.getById(productId);
 
     res.status(200).send(product);
   } catch (error) {
-    if (error) {
-      return res.status(404).send('Product not found');
-    }
-    console.error('Error fetching product:', error);
-    res.status(500).send('Error fetching product');
+    next(error);
   }
 };
 
-export const getProductByItemId = async (req: Request, res: Response) => {
+export const getProductByItemId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { itemId } = req.params;
 
-    if (!itemId) {
-      return res.status(400).send('Invalid product ItemId');
-    }
-
     const product = await productService.getProductByItemId(itemId);
 
-    res.status(200).send(product);
+    res.status(httpStatusCodes.OK).send(product);
   } catch (error) {
-    if (error) {
-      return res.status(404).send('Product not found');
-    }
-    console.error('Error fetching product:', error);
-    res.status(500).send('Error fetching product');
+    next(error);
   }
 };
 
-export const getSameModels = async (req: Request, res: Response) => {
+export const getSameModels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { namespaceId } = req.query;
 
   const parsedNamespaceId = typeof namespaceId === 'string' ? namespaceId : '';
 
-  const products = await productService.getSameModels(parsedNamespaceId);
-
-  if (!products) {
-    res.sendStatus(404);
-
-    return;
+  try {
+    const products = await productService.getSameModels(parsedNamespaceId);
+    res.status(httpStatusCodes.OK).send(products);
+  } catch (error) {
+    next(error);
   }
-  res.status(200).send(products);
 };
 
 export const getRecommended = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   const { category } = req.params;
   try {
     const recommendedProducts =
       await productService.getRecommendedProducts(category);
 
-    if (recommendedProducts.length > 0) {
-      res.status(200).send(recommendedProducts);
-    } else {
-      res.status(404).send('No products found in this category');
-    }
+    res.status(httpStatusCodes.OK).send(recommendedProducts);
   } catch (error) {
-    console.error('Error in getRecommended controller:', error);
-    res.status(500).send('Internal Server Error');
+    next(error);
   }
 };
 
 export const getProductsSortedByHotPrice = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const products = await productService.getProductsSortedByHotPrice();
-    res.status(200).json(products);
+    res.status(httpStatusCodes.OK).json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).send('Internal Server Error');
+    next(error);
   }
 };
