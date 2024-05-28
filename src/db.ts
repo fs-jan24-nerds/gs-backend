@@ -6,6 +6,7 @@ import { products } from './models/products.js';
 import { productsDetails } from './models/products-details.js';
 import { users } from './models/users.js';
 import { favourites } from './models/favourites.js';
+import { cart } from './models/cart.js';
 
 dotenv.config();
 
@@ -54,5 +55,14 @@ export const Favourites = sequelize.define('favourites', favourites, {
   updatedAt: false,
 });
 
+export const Cart = sequelize.define('cart', cart, {
+  tableName: 'cart',
+  createdAt: false,
+  updatedAt: false,
+});
+
 Users.belongsToMany(Products, { through: Favourites, foreignKey: 'userId' });
 Products.belongsToMany(Users, { through: Favourites, foreignKey: 'productId' });
+
+Users.belongsToMany(Products, { through: Cart, foreignKey: 'userId' });
+Products.belongsToMany(Users, { through: Cart, foreignKey: 'productId' });
