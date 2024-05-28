@@ -42,3 +42,14 @@ export interface ProductDetails {
   zoom: string;
   cell: string[];
 }
+
+export interface QueryParams {
+  query?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
+  perPage?: string;
+  page?: string;
+  category?: string;
+}
