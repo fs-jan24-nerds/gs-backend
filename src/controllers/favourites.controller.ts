@@ -1,48 +1,46 @@
 import { Users } from '../db';
 import * as favouritesService from '../services/favourites.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { httpStatusCodes } from '../util/http-status-codes';
 
-export const addFavourite = async (req: Request, res: Response) => {
+export const addFavourite = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { userId, productId } = req.body;
-  const user = await Users.findByPk(Number(userId));
-
-  if (!user) {
-    res.sendStatus(404);
-
-    return;
+  try {
+    const favouriteProduct = await favouritesService.addFavouriteProduct(
+      Number(userId),
+      Number(productId),
+    );
+    res.status(httpStatusCodes.OK).send(favouriteProduct);
+  } catch (error) {
+    next(error);
   }
-  const product = await favouritesService.addFavouriteProduct(
-    Number(userId),
-    Number(productId),
-  );
-
-  res.send(product);
-  res.status(200);
 };
 
-export const getFavouriteProducts = async (req: Request, res: Response) => {
+export const getFavouriteProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { userId } = req.params;
 
-  if (!userId) {
-    res.sendStatus(404);
-
-    return;
+  try {
+    const favouriteProducts =
+      await favouritesService.getFavouriteProductsByUserId(Number(userId));
+    res.status(httpStatusCodes.OK).json(favouriteProducts);
+  } catch (error) {
+    next(error);
   }
-
-  const favouriteProducts =
-    await favouritesService.getFavouriteProductsByUserId(Number(userId));
-
-  if (!favouriteProducts) {
-    res.sendStatus(404);
-
-    return;
-  }
-
-  res.json(favouriteProducts);
-  res.status(200);
 };
 
-export const removeFavouriteProduct = async (req: Request, res: Response) => {
+export const removeFavouriteProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { userId, productId } = req.body;
   const user = await Users.findByPk(Number(userId));
 
@@ -52,10 +50,13 @@ export const removeFavouriteProduct = async (req: Request, res: Response) => {
     return;
   }
 
-  const product = await favouritesService.removeFavouriteProduct(
-    Number(userId),
-    Number(productId),
-  );
-  res.json(product);
-  res.status(200);
+  try {
+    const product = await favouritesService.removeFavouriteProduct(
+      Number(userId),
+      Number(productId),
+    );
+    res.status(httpStatusCodes.OK).json(product);
+  } catch (error) {
+    next(error);
+  }
 };

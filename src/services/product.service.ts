@@ -1,23 +1,7 @@
 import { Op, Sequelize } from 'sequelize';
-import { Products, ProductsDetails } from '../db';
+import { Products } from '../db';
 import { QueryParams } from '../types';
 import { BadRequestError, NotFoundError } from '../util/errors/api-errors';
-
-// type PageParams = {
-//   perPage?: number;
-//   page?: number;
-// };
-
-// type FilterParams = {
-//   query?: string;
-//   minPrice?: number;
-//   maxPrice?: number;
-// };
-
-// type SortParams = {
-//   sort?: string;
-//   order?: 'asc' | 'desc';
-// };
 
 export const parseQueryParams = (queryParams: QueryParams) => {
   const { query, minPrice, maxPrice, sort, order, perPage, page, category } =
@@ -94,22 +78,6 @@ export const getById = async (id: number) => {
     throw new NotFoundError(['Product not found']);
   }
   return product;
-};
-
-export const getProductByItemId = async (itemId: string) => {
-  if (!itemId) {
-    throw new BadRequestError(['Invalid product ItemId']);
-  }
-
-  const details = await ProductsDetails.findAll({
-    where: {
-      id: itemId,
-    },
-  });
-  if (!details) {
-    throw new NotFoundError(['Product not found']);
-  }
-  return details;
 };
 
 export const getSameModels = async (namespaceId: string) => {
