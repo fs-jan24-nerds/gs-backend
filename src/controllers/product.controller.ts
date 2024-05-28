@@ -40,22 +40,6 @@ export const getProductById = async (
   }
 };
 
-export const getProductByItemId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { itemId } = req.params;
-
-    const product = await productService.getProductByItemId(itemId);
-
-    res.status(httpStatusCodes.OK).send(product);
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const getSameModels = async (
   req: Request,
   res: Response,
